@@ -50,7 +50,17 @@ const Auth = () => {
         if (roleError) throw roleError;
 
         toast.success("Account created successfully!");
-        navigate("/");
+        
+        // Redirect based on role
+        if (role === "student") {
+          navigate("/student/browse");
+        } else if (role === "vendor") {
+          navigate("/vendor/dashboard");
+        } else if (role === "rider") {
+          navigate("/rider/dashboard");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -68,15 +78,32 @@ const Auth = () => {
     const password = formData.get("password") as string;
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if (error) throw error;
+
+      // Get user role to redirect appropriately
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .single();
       
       toast.success("Welcome back!");
-      navigate("/");
+      
+      // Redirect based on role
+      if (roleData?.role === "student") {
+        navigate("/student/browse");
+      } else if (roleData?.role === "vendor") {
+        navigate("/vendor/dashboard");
+      } else if (roleData?.role === "rider") {
+        navigate("/rider/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       toast.error(error.message);
     } finally {
