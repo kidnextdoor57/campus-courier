@@ -59,7 +59,7 @@ export const StudentDashboard = () => {
 
       if (error) throw error;
       setVendors(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error("Failed to load vendors");
     } finally {
       setIsLoading(false);
@@ -76,7 +76,7 @@ export const StudentDashboard = () => {
 
       if (error) throw error;
       setMenuItems(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error("Failed to load menu items");
     }
   };

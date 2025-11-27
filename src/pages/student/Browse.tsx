@@ -1,18 +1,24 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
 import { DashboardNav } from "@/components/DashboardNav";
-import { Star, Search, MapPin, Store, Clock, Utensils, ShoppingCart, Package, UserCircle } from "lucide-react";
+import { Star, Search, MapPin, Store, Clock, Utensils,ShoppingCart, Package, UserCircle, Heart, Filter} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Browse() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [userEmail, setUserEmail] = useState<string>("");
   const navigate = useNavigate();
+
+  // Mock Categories for filtering
+  const categories = ["All", "Fast Food", "Traditional", "Drinks", "Snacks"];
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -32,9 +38,12 @@ export default function Browse() {
     },
   });
 
-  const filteredVendors = vendors?.filter((vendor) =>
-    vendor.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredVendors = vendors?.filter((vendor) => {
+    const matchesSearch = vendor.name.toLowerCase().includes(searchQuery.toLowerCase());
+    // In a real app, you'd check vendor.category === selectedCategory
+    const matchesCategory = selectedCategory === "All" || true;
+    return matchesSearch && matchesCategory;
+  });
 
   const menuItems = [
     { label: "Browse", href: "/student/browse", icon: <Store className="h-4 w-4" /> },
@@ -44,158 +53,112 @@ export default function Browse() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+    <div className="min-h-screen bg-muted/30">
       <DashboardNav userEmail={userEmail} userRole="student" menuItems={menuItems} />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Header */}
-        <div className="mb-12 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
-              <Utensils className="h-8 w-8 text-primary-foreground" />
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Header Section */}
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold tracking-tight">Good Afternoon, Scholar 👋</h1>
+          <p className="text-muted-foreground">What are you craving today?</p>
+                    {/* Search and Filter Bar */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search restaurants or food..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 bg-background shadow-sm"
+              />
             </div>
+            <Button variant="outline" className="h-12 px-6 gap-2 hidden md:flex">
+              <Filter className="h-4 w-4" /> Filters
+            </Button>
           </div>
-          <h1 className="text-4xl font-bold mb-2">Browse Campus Vendors</h1>
-          <p className="text-muted-foreground text-lg">Discover delicious meals from your favorite campus restaurants</p>
+
+          {/* Categories Pills */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+                className="rounded-full px-6"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search for restaurants..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 text-lg"
-            />
-          </div>
-        </div>
-
+        {/* Vendors Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-6 bg-muted rounded w-3/4 mb-2" />
+              <Card key={i} className="animate-pulse border-none shadow-sm">
+                <div className="h-48 bg-muted rounded-t-xl" />
+                <CardContent className="p-4 space-y-3">
+                  <div className="h-6 bg-muted rounded w-3/4" />
                   <div className="h-4 bg-muted rounded w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-muted rounded mb-4" />
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-muted rounded w-16" />
-                    <div className="h-10 bg-muted rounded w-24" />
-                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : filteredVendors?.length === 0 ? (
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <Store className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Vendors Found</h3>
-              <p className="text-muted-foreground text-center max-w-md">
-                {searchQuery ? "Try adjusting your search" : "Check back later! New vendors are being added all the time."}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-20">
+            <div className="bg-muted h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Utensils className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold">No restaurants found</h3>
+            <p className="text-muted-foreground">Try changing your filters or search term</p>
+          </div>
         ) : (
-          <>
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Card>
-                <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Store className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Available Vendors</p>
-                    <p className="text-2xl font-bold">{filteredVendors?.length || 0}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
-                    <Clock className="h-6 w-6 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Avg. Delivery</p>
-                    <p className="text-2xl font-bold">15-20 min</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Star className="h-6 w-6 text-accent fill-accent" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Top Rated</p>
-                    <p className="text-2xl font-bold">4.8★</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Vendors Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredVendors?.map((vendor) => (
-                <Card 
-                  key={vendor.id} 
-                  className="group hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2"
-                  onClick={() => navigate(`/student/vendor/${vendor.id}`)}
-                >
-                  <CardHeader className="p-0">
-                    {vendor.image_url ? (
-                      <img
-                        src={vendor.image_url}
-                        alt={vendor.name}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                    ) : (
-                      <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-lg flex items-center justify-center">
-                        <Store className="h-16 w-16 text-muted-foreground" />
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-4">
-                    <div>
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors mb-2">
-                        {vendor.name}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {vendor.description || "Fresh and delicious campus food delivered to your location"}
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{vendor.location}</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                          <span className="text-sm font-medium">{vendor.rating?.toFixed(1) || "4.5"}</span>
-                        </div>
-                        <Badge variant="secondary">Open</Badge>
-                      </div>
-                    </div>
-
-                    <Button className="w-full" onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/student/vendor/${vendor.id}`);
-                    }}>
-                      View Menu
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredVendors?.map((vendor) => (
+              <Card
+                key={vendor.id}
+                className="group border-none shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden rounded-xl"
+                onClick={() => navigate(`/student/vendor/${vendor.id}`)}
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={vendor.image_url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"}
+                    alt={vendor.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-3 right-3">
+                    <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-white/90 hover:bg-white text-red-500" onClick={(e) => { e.stopPropagation(); /* Add favorite logic */ }}>
+                      <Heart className="h-4 w-4" />
                     </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </>
+                  </div>
+                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end text-white">
+                    <div>
+                      <h3 className="font-bold text-lg">{vendor.name}</h3>
+                      <div className="flex items-center gap-2 text-xs text-white/90">
+                        <Clock className="h-3 w-3" /> 15-25 min • <span className="font-medium">Free Delivery</span>
+                      </div>
+                    </div>
+                    <Badge className="bg-white/90 text-black hover:bg-white border-none flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      {vendor.rating?.toFixed(1) || "New"}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                   <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                    {vendor.description || "Tasty meals available."}
+                  </p>
+                  <Separator className="mb-3" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    {vendor.location}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </main>
     </div>
