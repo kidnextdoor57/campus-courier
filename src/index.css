@@ -48,10 +48,12 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(24 95% 53%), hsl(24 95% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(142 76% 45%), hsl(142 76% 60%));
-    --gradient-hero: linear-gradient(135deg, hsl(24 95% 53%), hsl(45 95% 60%));
+    /* Gradients - Black & White with vibrant accents */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 25%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 90%), hsl(0 0% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(0 0% 15%) 50%, hsl(24 95% 53%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 96%));
+    --gradient-accent: linear-gradient(135deg, hsl(24 95% 53%), hsl(45 95% 60%));
     
     /* Shadows */
     --shadow-sm: 0 2px 8px hsl(24 95% 53% / 0.1);
@@ -102,9 +104,11 @@ All colors MUST be HSL.
     --input: 25 15% 18%;
     --ring: 24 95% 53%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(24 95% 53%), hsl(24 95% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(142 70% 40%), hsl(142 70% 55%));
-    --gradient-hero: linear-gradient(135deg, hsl(24 95% 53%), hsl(45 90% 55%));
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 18%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 20%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(0 0% 12%) 50%, hsl(24 95% 53%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(25 20% 12%), hsl(25 20% 10%));
+    --gradient-accent: linear-gradient(135deg, hsl(24 95% 53%), hsl(45 90% 55%));
     
     --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.3);
     --shadow-md: 0 4px 16px hsl(0 0% 0% / 0.4);
