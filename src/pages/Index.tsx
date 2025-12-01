@@ -117,8 +117,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero opacity-90" />
+      <section className="relative overflow-hidden bg-gradient-hero">
+        <div className="absolute inset-0 opacity-50" />
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -180,40 +180,46 @@ const Index = () => {
               {
                 icon: Clock,
                 title: "Lightning Fast",
-                description: "Get your food in 15-20 minutes. No more long queues or waiting times."
+                description: "Get your food in 15-20 minutes. No more long queues or waiting times.",
+                gradient: "from-primary/20 to-primary/5"
               },
               {
                 icon: Smartphone,
                 title: "Easy Ordering",
-                description: "Browse menus, customize orders, and track delivery all in one place."
+                description: "Browse menus, customize orders, and track delivery all in one place.",
+                gradient: "from-accent/20 to-accent/5"
               },
               {
                 icon: MapPin,
                 title: "Real-time Tracking",
-                description: "Know exactly where your food is with live GPS tracking."
+                description: "Know exactly where your food is with live GPS tracking.",
+                gradient: "from-secondary/20 to-secondary/5"
               },
               {
                 icon: Shield,
                 title: "Secure Payments",
-                description: "Safe and secure digital payments with multiple options."
+                description: "Safe and secure digital payments with multiple options.",
+                gradient: "from-primary/20 to-primary/5"
               },
               {
                 icon: TrendingUp,
                 title: "Best Prices",
-                description: "Competitive prices with regular deals and student discounts."
+                description: "Competitive prices with regular deals and student discounts.",
+                gradient: "from-accent/20 to-accent/5"
               },
               {
                 icon: Utensils,
                 title: "Wide Selection",
-                description: "Choose from all your favorite campus vendors in one app."
+                description: "Choose from all your favorite campus vendors in one app.",
+                gradient: "from-secondary/20 to-secondary/5"
               }
             ].map((feature, index) => (
               <div
                 key={index}
-                className="bg-card p-8 rounded-2xl shadow-custom-md hover:shadow-custom-lg transition-all hover:-translate-y-1"
+                className={`bg-gradient-to-br ${feature.gradient} backdrop-blur-sm bg-card/50 p-8 rounded-2xl shadow-custom-md hover:shadow-custom-lg transition-all hover:-translate-y-1 border border-border/50`}
               >
-                <div className="h-14 w-14 rounded-full bg-gradient-primary flex items-center justify-center mb-6">
-                  <feature.icon className="h-7 w-7 text-primary-foreground" />
+                <div className="h-14 w-14 rounded-full bg-gradient-accent flex items-center justify-center mb-6 shadow-glow">
+                  <feature.icon className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">

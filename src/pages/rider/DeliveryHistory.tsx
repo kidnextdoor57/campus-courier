@@ -15,6 +15,7 @@ interface OrderHistory {
   delivery_fee: number;
   vendors?: { name: string };
   profiles?: { full_name: string };
+  customer?: { full_name: string };
 }
 
 export default function DeliveryHistory() {
@@ -36,15 +37,32 @@ export default function DeliveryHistory() {
           delivery_location,
           created_at,
           delivery_fee,
-          vendors (name),
-          profiles:customer_id (full_name)
+          customer_id,
+          vendors (name)
         `)
         .eq("rider_id", user.id)
         .in("status", ["delivered", "cancelled"])
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as OrderHistory[];
+      
+      // Fetch customer names separately
+      const ordersWithCustomers = await Promise.all(
+        data.map(async (order) => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", order.customer_id)
+            .single();
+          
+          return {
+            ...order,
+            profiles: profile ? { full_name: profile.full_name } : undefined
+          };
+        })
+      );
+      
+      return ordersWithCustomers as OrderHistory[];
     },
   });
 

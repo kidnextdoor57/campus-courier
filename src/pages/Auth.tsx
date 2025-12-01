@@ -112,8 +112,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
-      <Card className="w-full max-w-md shadow-custom-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+      <Card className="w-full max-w-md shadow-custom-lg relative backdrop-blur-sm bg-card/95">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="h-16 w-16 rounded-full bg-gradient-primary flex items-center justify-center">
